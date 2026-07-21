@@ -1,0 +1,480 @@
+<title>Painel da Obra — Pendências &amp; Dependências</title>
+<style>
+  :root{
+    --paper:#f4f3f0; --card:#ffffff; --card-2:#f7f6f3;
+    --ink:#1e1d1b; --ink-2:#605d58; --ink-3:#96918a;
+    --line:#e9e7e2; --line-2:#dcd9d2;
+    --accent:#bf6d2b; --accent-ink:#95531f; --accent-bg:#f6ece0;
+    --green:#2f8a5f; --green-bg:#e8f1ea; --green-ink:#25714d;
+    --slate:#6b6f76; --slate-bg:#efedea;
+    --red:#c1493b; --red-bg:#f8eae7; --red-ink:#a53c30;
+    --shadow:0 1px 2px rgba(30,29,27,.04), 0 6px 20px -12px rgba(30,29,27,.16);
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#141311; --card:#201e1b; --card-2:#1a1916;
+      --ink:#ecebe7; --ink-2:#b0aca4; --ink-3:#7d7970;
+      --line:#2f2d29; --line-2:#3d3a34;
+      --accent:#dd9142; --accent-ink:#eaad6f; --accent-bg:#291f13;
+      --green:#4cae83; --green-bg:#17271f; --green-ink:#6ecb9c;
+      --slate:#8b8f96; --slate-bg:#1f1e1a;
+      --red:#df786b; --red-bg:#2b1a16; --red-ink:#ea8b7e;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.72);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#141311; --card:#201e1b; --card-2:#1a1916; --ink:#ecebe7; --ink-2:#b0aca4; --ink-3:#7d7970;
+    --line:#2f2d29; --line-2:#3d3a34; --accent:#dd9142; --accent-ink:#eaad6f; --accent-bg:#291f13;
+    --green:#4cae83; --green-bg:#17271f; --green-ink:#6ecb9c; --slate:#8b8f96; --slate-bg:#1f1e1a;
+    --red:#df786b; --red-bg:#2b1a16; --red-ink:#ea8b7e;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.72);
+  }
+  :root[data-theme="light"]{
+    --paper:#f4f3f0; --card:#ffffff; --card-2:#f7f6f3; --ink:#1e1d1b; --ink-2:#605d58; --ink-3:#96918a;
+    --line:#e9e7e2; --line-2:#dcd9d2; --accent:#bf6d2b; --accent-ink:#95531f; --accent-bg:#f6ece0;
+    --green:#2f8a5f; --green-bg:#e8f1ea; --green-ink:#25714d; --slate:#6b6f76; --slate-bg:#efedea;
+    --red:#c1493b; --red-bg:#f8eae7; --red-ink:#a53c30;
+    --shadow:0 1px 2px rgba(30,29,27,.04), 0 6px 20px -12px rgba(30,29,27,.16);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--font); line-height:1.5;
+    -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;}
+  .wrap{max-width:920px; margin:0 auto; padding:22px 16px 90px}
+  @media (min-width:600px){ .wrap{padding:34px 24px 100px} }
+
+  header{margin-bottom:2px}
+  .eyebrow{font-size:12px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--accent-ink); margin:0 0 9px}
+  h1{font-size:clamp(27px,6vw,40px); line-height:1.02; letter-spacing:-.025em; margin:0; font-weight:800}
+  .sub{color:var(--ink-2); margin:11px 0 0; max-width:58ch; font-size:15px}
+  .tally{display:flex; gap:22px; flex-wrap:wrap; margin:20px 2px 8px}
+  .tally .t{display:flex; align-items:baseline; gap:7px}
+  .tally .t b{font-size:23px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.02em; line-height:1}
+  .tally .t span{font-size:13px; color:var(--ink-2)}
+  .tally .t.g b{color:var(--green)} .tally .t.r b{color:var(--red)}
+
+  /* toolbar */
+  .bar-tools{position:sticky; top:0; z-index:30; margin:14px 0; padding:8px; background:color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter:blur(10px); border:1px solid var(--line); border-radius:15px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .tabs{display:flex; flex:1 1 100%; background:var(--card-2); border:1px solid var(--line); border-radius:11px; padding:3px; gap:2px}
+  .tabs button{flex:1; font:inherit; font-size:13px; font-weight:600; border:0; background:transparent; color:var(--ink-2); padding:9px 8px; border-radius:9px; cursor:pointer; white-space:nowrap; transition:background .12s,color .12s}
+  .tabs button[aria-selected="true"]{background:var(--card); color:var(--ink); box-shadow:0 1px 3px rgba(0,0,0,.09)}
+  .search{flex:1 1 100%; display:flex; align-items:center; gap:9px; background:var(--card); border:1px solid var(--line); border-radius:11px; padding:10px 13px}
+  .search input{border:0; background:transparent; color:inherit; font:inherit; font-size:15px; width:100%; outline:none}
+  .search svg{flex:none; color:var(--ink-3)}
+  .filterpill{display:none; align-items:center; gap:6px; font-size:13px; background:var(--accent-bg); color:var(--accent-ink); padding:7px 8px 7px 13px; border-radius:20px; white-space:nowrap}
+  .filterpill.on{display:inline-flex}
+  .filterpill button{border:0; background:transparent; color:inherit; cursor:pointer; font:inherit; font-size:15px; line-height:1; padding:0 2px}
+  @media (min-width:640px){ .tabs{flex:0 0 auto} .tabs button{flex:none; padding:8px 15px} .search{flex:1 1 200px; min-width:180px} }
+
+  /* people */
+  .pstrip{display:flex; flex-wrap:wrap; gap:7px; padding:2px 0; margin-bottom:16px}
+  .pchip{flex:none; display:flex; align-items:center; gap:9px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:6px 13px 6px 7px; cursor:pointer; font:inherit; color:inherit}
+  .pchip:hover{border-color:var(--line-2)}
+  .pchip.active{border-color:var(--ink); background:var(--card-2)}
+  .av{border-radius:8px; display:grid; place-items:center; font-weight:700; color:#fff; flex:none}
+  .pchip .av{width:30px; height:30px; font-size:12px}
+  .pchip .txt{display:flex; flex-direction:column; line-height:1.2}
+  .pchip .who{font-weight:650; font-size:13.5px; white-space:nowrap}
+  .pchip .mt{font-size:11px; color:var(--ink-3); white-space:nowrap; margin-top:1px}
+  .pchip .mt b{color:var(--green-ink); font-weight:700}
+
+  /* group headers */
+  .group{margin:22px 0}
+  .ghead{display:flex; align-items:center; gap:11px; padding:2px 2px 12px}
+  .ghead .av{width:30px; height:30px; font-size:12px; border-radius:8px}
+  .ghead h3{font-size:16px; margin:0; font-weight:700; letter-spacing:-.01em}
+  .ghead .idx{font-size:12px; color:var(--ink-3); font-weight:700; font-variant-numeric:tabular-nums}
+  .ghead .gc{margin-left:auto; font-size:12px; color:var(--ink-3); display:flex; align-items:center; gap:10px; white-space:nowrap}
+  .ghead[data-area]{cursor:pointer}
+  .ghead .chev{color:var(--ink-3); transition:transform .18s}
+  .group.collapsed .chev{transform:rotate(-90deg)} .group.collapsed .rows{display:none}
+
+  .rows{display:flex; flex-direction:column; gap:8px}
+  .r{background:var(--card); border:1px solid var(--line); border-radius:13px; box-shadow:var(--shadow); overflow:hidden; border-left:3px solid var(--line-2)}
+  .r.ready{border-left-color:var(--green)}
+  .r.blocked{border-left-color:var(--red)}
+  .r .main{display:flex; align-items:flex-start; gap:11px; padding:13px 15px}
+  .r .ti{flex:1; min-width:0}
+  .r h4{font-size:15px; margin:0; font-weight:650; letter-spacing:-.005em; line-height:1.32}
+  .r .sub2{display:flex; align-items:center; gap:7px; margin-top:5px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-3)}
+  .r .sub2 .own{display:inline-flex; align-items:center; gap:6px; color:var(--ink-2)}
+  .r .sub2 .own .av{width:17px; height:17px; font-size:8.5px; border-radius:5px}
+  .sep{color:var(--line-2)}
+  .unlk{color:var(--accent-ink); font-weight:700}
+  .st{font-size:11px; font-weight:700; letter-spacing:.02em; padding:4px 10px; border-radius:8px; white-space:nowrap; flex:none; margin-top:1px}
+  .st.liberada{background:var(--green-bg); color:var(--green-ink)}
+  .st.travada{background:var(--red-bg); color:var(--red-ink)}
+  .det{display:flex; padding:0 15px 14px; flex-direction:column; gap:11px}
+  .det .dl{font-size:11px; font-weight:600; letter-spacing:.02em; color:var(--ink-3); margin-bottom:2px}
+  .blk{display:flex; flex-direction:column; gap:6px}
+  .blk .item{display:flex; align-items:baseline; gap:9px; font-size:13px; color:var(--ink-2)}
+  .blk .item .d{width:7px; height:7px; border-radius:50%; flex:none; position:relative; top:4px}
+  .blk .item.ok .d{background:var(--green)} .blk .item.wait .d{background:var(--red)} .blk .item.person .d{background:var(--accent)} .blk .item.note .d{background:var(--ink-3)} .blk .item.free .d{background:var(--green)}
+  .blk .item b{color:var(--ink); font-weight:600} .blk .item .o{color:var(--ink-3)} .blk .item .done{text-decoration:line-through; color:var(--ink-3)}
+  .blk.unlocks{background:var(--green-bg); border-radius:10px; padding:10px 12px}
+  .blk.unlocks .dl{color:var(--green-ink)}
+  .impact{font-size:13px; color:var(--ink-2); background:var(--accent-bg); border-radius:10px; padding:9px 12px}
+  .impact b{font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-ink); display:block; margin-bottom:3px}
+
+  .banner{font-size:14px; color:var(--ink-2); margin:2px 2px 18px; line-height:1.55}
+  .banner b{color:var(--ink); font-weight:650}
+  .divider{display:flex; align-items:center; gap:12px; margin:32px 2px 14px}
+  .divider h2{font-size:12px; margin:0; font-weight:700; letter-spacing:.05em; white-space:nowrap; color:var(--ink-2); text-transform:uppercase}
+  .divider .ln{height:1px; background:var(--line); flex:1}
+  .divider .h{font-size:12px; color:var(--ink-3)}
+  .empty{text-align:center; padding:56px 22px; color:var(--ink-3); font-size:14px}
+  .cols{display:grid; grid-template-columns:1fr; gap:16px; align-items:start}
+  @media (min-width:680px){ .cols{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))} }
+
+  /* bloqueios */
+  .blocker{background:var(--card); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); margin-bottom:12px; overflow:hidden; border-left:4px solid var(--red)}
+  .blocker.go{border-left-color:var(--green)}
+  .blocker .bhead{display:flex; align-items:center; gap:12px; padding:14px 15px}
+  .blocker .bt{flex:1; min-width:0}
+  .blocker .bt h4{font-size:15.5px; margin:0; font-weight:700; letter-spacing:-.01em; line-height:1.25}
+  .blocker .bmeta{display:flex; align-items:center; gap:7px; margin-top:6px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-3)}
+  .blocker .bmeta .own{color:var(--ink-2)}
+  .btcount{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--red-ink); background:var(--red-bg); padding:7px 11px; border-radius:10px; text-align:center; flex:none; line-height:1.1}
+  .btcount b{display:block; font-size:18px; margin-top:2px}
+  .blocklist{padding:12px 15px 14px; display:flex; flex-direction:column; gap:6px; border-top:1px solid var(--line)}
+  .blocklist .bl{font-size:13px; color:var(--ink-2); display:flex; align-items:baseline; gap:9px}
+  .blocklist .bl .d{width:6px; height:6px; border-radius:50%; background:var(--ink-3); flex:none; position:relative; top:4px}
+  .blocklist .bl .o{color:var(--ink-3)}
+
+  footer{margin-top:56px; padding-top:20px; border-top:1px solid var(--line); font-size:12.5px; color:var(--ink-3); line-height:1.6}
+  footer b{color:var(--ink-2)}
+  @media (max-width:600px){ .bar-tools{position:static} }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Acompanhamento da obra</p>
+    <h1>Painel da Obra</h1>
+    <p class="sub">O que dá pra executar agora, o que está bloqueado e por quem. Toque num responsável pra ver só as tarefas dele.</p>
+  </header>
+
+  <div class="tally" id="tally"></div>
+
+  <div class="bar-tools">
+    <div class="tabs" id="tabs" role="tablist">
+      <button role="tab" data-view="agora" aria-selected="true">Agora</button>
+      <button role="tab" data-view="bloqueios" aria-selected="false">Bloqueios</button>
+      <button role="tab" data-view="ambiente" aria-selected="false">Ambientes</button>
+      <button role="tab" data-view="responsavel" aria-selected="false">Equipe</button>
+    </div>
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Buscar tarefa ou responsável…" autocomplete="off">
+    </label>
+    <span class="filterpill" id="filterpill"></span>
+  </div>
+
+  <div class="pstrip" id="pstrip"></div>
+  <div id="view"></div>
+
+  <footer>
+    <p><b style="color:var(--green)">Liberada</b> = nenhuma outra tarefa te bloqueia, pode executar. <b style="color:var(--red)">Bloqueada</b> = depende de tarefas ainda abertas — a lista <b>Bloqueado por</b> mostra quais. O selo <b>destrava N</b> indica quantas tarefas ficam livres ao concluir esta.</p>
+  </footer>
+</div>
+
+<script>
+const TASKS = [
+  // GERAL
+  {area:"Geral", title:"Finalizar marcenaria", owner:"Marcenaria", role:"Fornecedor", deps:[], impact:"Destrava micro-ondas, frigobares e impressora."},
+  {area:"Geral", title:"Comprar itens do pedal da torneira", owner:"Kleyton", role:"Responsável", deps:[], impact:"Necessária para instalar os pedais das salas."},
+  // LAVABO
+  {area:"Lavabo", title:"Instalar Ventokit", owner:"Nelson", role:"Executor", deps:[]},
+  {area:"Lavabo", title:"Mover caixa de som", owner:"Nelson", role:"Executor", deps:[]},
+  {area:"Lavabo", title:"Aplicar nova iluminação do teto", owner:"Nelson", role:"Executor", deps:[]},
+  {area:"Lavabo", title:"Comprar espelho", owner:"Luana", role:"Responsável", deps:[]},
+  {area:"Lavabo", title:"Confecção da nova pia", owner:"Daniel", role:"Responsável", deps:[], impact:"Necessária para a instalação da nova pia."},
+  {area:"Lavabo", title:"Instalar nova pia", owner:"Rubens", role:"Executor", deps:[{c:"Confecção da nova pia"}]},
+  // SALA PRINCIPAL
+  {area:"Sala Principal", title:"Instalar TV", owner:"Kleyton", role:"Responsável", deps:[{c:"Compra dos equipamentos do Studio"}]},
+  {area:"Sala Principal", title:"Instalar cadeira", owner:"Alessandro", role:"Executor", deps:[{p:"Daniel", note:"cuba e torneira — Sala Principal"},{c:"Pintura de parede — Sala Principal"},{c:"Pintura de teto — Sala Principal"}]},
+  {area:"Sala Principal", title:"Instalar cuba e torneira", owner:"Daniel", role:"Responsável", deps:[]},
+  {area:"Sala Principal", title:"Instalar pedal da torneira", owner:"Rubens", role:"Executor", deps:[{c:"Compra dos itens do pedal da torneira"},{p:"Daniel", note:"finalizar cuba e torneira — Sala Principal"}]},
+  {area:"Sala Principal", title:"Comprar frigobar", owner:"Kleyton", role:"Responsável", deps:[{c:"Finalização da marcenaria"}]},
+  {area:"Sala 2", title:"Comprar frigobar", owner:"Kleyton", role:"Responsável", deps:[{c:"Finalização da marcenaria"}]},
+  {area:"Sala Principal", title:"Aplicar nova iluminação", owner:"Nelson", role:"Executor", deps:[]},
+  {area:"Sala Principal", title:"Remover câmera", owner:"Nelson", role:"Executor", deps:[]},
+  {area:"Sala Principal", title:"Comprar pendente (luminária)", owner:"Luana", role:"Responsável", deps:[]},
+  {area:"Sala Principal", title:"Comprar espelho", owner:"Luana", role:"Responsável", deps:[]},
+  // STUDIO / DML
+  {area:"Studio / DML", title:"Instalar filtro", owner:"Rubens", role:"Executor", deps:[], impact:"Sem dependências — pode ser executado imediatamente."},
+  {area:"Studio / DML", title:"Comprar autoclave", owner:"Luana", role:"Responsável", deps:[]},
+  {area:"Studio / DML", title:"Medir posição dos itens do Studio", owner:"Luana", role:"Responsável", deps:[], impact:"Necessário para definir os equipamentos e as TVs do Studio."},
+  {area:"Studio / DML", title:"Comprar equipamentos do Studio", owner:"Luana", role:"Responsável", deps:[{c:"Definição da posição dos itens do Studio"}], impact:"Destrava a instalação das TVs (Sala Principal e Sala 2)."},
+  {area:"Studio / DML", title:"Comprar micro-ondas", owner:"A definir", role:"", deps:[{c:"Finalização da marcenaria"}]},
+  // SALA 2
+  {area:"Sala 2", title:"Instalar TV", owner:"Kleyton", role:"Responsável", deps:[{c:"Compra dos equipamentos do Studio"}]},
+  {area:"Sala 2", title:"Instalar cadeira", owner:"Alessandro", role:"Executor", deps:[{c:"Instalação da TV — Sala 2"},{p:"Daniel", note:"cuba e torneira — Sala 2"},{c:"Pintura de parede — Sala 2"},{c:"Pintura de teto — Sala 2"}]},
+  {area:"Sala 2", title:"Instalar cuba e torneira", owner:"Daniel", role:"Responsável", deps:[]},
+  {area:"Sala 2", title:"Instalar pedal da torneira", owner:"Rubens", role:"Executor", deps:[{c:"Compra dos itens do pedal da torneira"},{p:"Daniel", note:"instalação da cuba e torneira — Sala 2"}]},
+  {area:"Sala 2", title:"Aplicar nova iluminação", owner:"Nelson", role:"Executor", deps:[]},
+  {area:"Sala 2", title:"Instalar pendente", owner:"Nelson", role:"Executor", deps:[]},
+  // ÁREA EXTERNA
+  {area:"Área Externa", title:"Aprovar compra do purgador", owner:"Alessandro", role:"Aprovação", deps:[], impact:"Libera a compra do purgador pela Luana."},
+  {area:"Área Externa", title:"Purgador do compressor", owner:"Luana", role:"Responsável", deps:[{c:"Aprovação do Alessandro (purgador)"},{c:"Instalação das cadeiras odontológicas (salas)"}]},
+  {area:"Área Externa", title:"Instalar compressor", owner:"Alessandro", role:"Executor", deps:[{c:"Instalação das cadeiras odontológicas (salas)"}]},
+  {area:"Área Externa", title:"Instalar telhado", owner:"A definir", role:"", deps:[{c:"Instalação do compressor"}]},
+  // RECEPÇÃO
+  {area:"Recepção", title:"Definir empresa da logomarca", owner:"Kleyton", role:"Responsável", deps:[], impact:"Necessária para executar a logomarca na parede."},
+  {area:"Recepção", title:"Logomarca na parede", owner:"Luana", role:"Responsável", deps:[{c:"Definição da empresa da logomarca"},{c:"Instalação ao final da obra"}]},
+  {area:"Recepção", title:"Instalar mola na porta de vidro", owner:"Kleyton", role:"Executor", deps:[]},
+  {area:"Recepção", title:"Instalação elétrica da porta de vidro", owner:"Kleyton", role:"Responsável", deps:[]},
+  {area:"Recepção", title:"Instalar caixa de fios", owner:"Nelson", role:"Executor", deps:[]},
+  {area:"Recepção", title:"Instalar câmera", owner:"Nelson", role:"Executor", deps:[]},
+  {area:"Recepção", title:"Orçamento do vaso de planta", owner:"Luana", role:"Responsável", deps:[]},
+  {area:"Recepção", title:"Vaso de planta", owner:"A definir", role:"", deps:[{c:"Orçamento do vaso de planta"}]},
+  {area:"Recepção", title:"Comprar arandelas", owner:"Luana", role:"Responsável", deps:[]},
+  {area:"Recepção", title:"Instalar arandelas", owner:"Nelson", role:"Executor", deps:[{c:"Pintura de parede da recepção"},{c:"Compra das arandelas"}]},
+  {area:"Recepção", title:"Comprar móveis", owner:"Luana", role:"Responsável", deps:[]},
+  {area:"Recepção", title:"Comprar frigobar", owner:"Kleyton", role:"Responsável", deps:[{c:"Finalização da marcenaria"}]},
+  {area:"Recepção", title:"Comprar impressora", owner:"Kleyton", role:"Responsável", deps:[{c:"Finalização da marcenaria"}]},
+  {area:"Recepção", title:"Finalizar acabamento do teto da recepção", owner:"Rubens", role:"Executor", deps:[]},
+  // PINTURA (Rubens)
+  {area:"Lavabo", title:"Pintura de parede — Lavabo", owner:"Rubens", role:"Executor", deps:[{c:"Instalação da nova pia"}]},
+  {area:"Lavabo", title:"Pintura de teto — Lavabo", owner:"Rubens", role:"Executor", deps:[{c:"Instalar Ventokit"},{c:"Mover caixa de som"},{c:"Aplicar nova iluminação do teto — Lavabo"}]},
+  {area:"Sala Principal", title:"Pintura de parede — Sala Principal", owner:"Rubens", role:"Executor", deps:[{c:"Instalação da cuba e torneira — Sala Principal"}]},
+  {area:"Sala Principal", title:"Pintura de teto — Sala Principal", owner:"Rubens", role:"Executor", deps:[{c:"Aplicar nova iluminação — Sala Principal"},{c:"Remover câmera — Sala Principal"}]},
+  {area:"Studio / DML", title:"Instalar trilhos do Studio", owner:"A definir", role:"", deps:[{c:"Comprar equipamentos do Studio"}]},
+  {area:"Studio / DML", title:"Pintura de parede — Studio", owner:"Rubens", role:"Executor", deps:[{c:"Instalação do filtro"},{c:"Instalação dos trilhos do Studio"}]},
+  {area:"Studio / DML", title:"Pintura de teto — Studio", owner:"Rubens", role:"Executor", deps:[{c:"Instalação do filtro"},{c:"Instalação dos trilhos do Studio"}]},
+  {area:"Sala 2", title:"Pintura de parede — Sala 2", owner:"Rubens", role:"Executor", deps:[{c:"Instalação da cuba e torneira — Sala 2"}]},
+  {area:"Sala 2", title:"Pintura de teto — Sala 2", owner:"Rubens", role:"Executor", deps:[{c:"Aplicar nova iluminação — Sala 2"},{c:"Instalar pendente — Sala 2"}]},
+  {area:"Área Externa", title:"Pintura de parede do hall", owner:"Rubens", role:"Executor", deps:[]},
+  {area:"Recepção", title:"Pintura de parede — Recepção", owner:"Rubens", role:"Executor", deps:[]},
+  {area:"Recepção", title:"Pintura de teto — Recepção", owner:"Rubens", role:"Executor", deps:[]},
+];
+const AREAS = ["Geral","Lavabo","Sala Principal","Studio / DML","Sala 2","Área Externa","Recepção"];
+const PCOLORS = {"Anna":"#c2410c","Luana":"#7c3aed","Daniel":"#0e7490","Kleyton":"#1d4ed8","Nelson":"#15803d","Rubens":"#a16207","Alessandro":"#be185d","Marcenaria":"#4b5563","A definir":"#94a3b8"};
+const norm = n => n==="Arquiteta" ? "Anna" : n;
+const pcolor = n => PCOLORS[n] || "#64748b";
+const isReal = n => n && n!=="A definir";
+function initials(n){ if(n==="A definir") return "?"; const p=n.trim().split(/\s+/); return (p[0][0]||"").toUpperCase()+(p.length>1?(p[1][0]||"").toUpperCase():""); }
+
+/* ---------- dependency graph (token matcher) ---------- */
+const VERBS={instalar:'inst',instalacao:'inst',instalado:'inst',instalada:'inst',confeccao:'conf',confeccionar:'conf',definir:'def',definicao:'def',definida:'def',comprar:'compra',compra:'compra',mover:'mover',aplicar:'aplicar',remover:'remov',remocao:'remov',aprovar:'aprov',aprovacao:'aprov',medir:'medir',medida:'medir',medidas:'medir',configurar:'config',configuracao:'config',executar:'exec',execucao:'exec',finalizar:'final',finalizacao:'final',destravamento:'destrav',destravar:'destrav'};
+const VSET=new Set(Object.values(VERBS));
+const STOP=new Set(['de','do','da','dos','das','o','a','os','as','e','em','no','na','com','para','pra','ao','todo','toda','um','uma','pela','pelo']);
+const FILLER=new Set(['nova','novo','geral','pontos','cargas','odontologica','odontologicas','luminaria','luminarias','conjunta','servicos','atualizadas','atualizada','sala']);
+const AREATOK=new Set(['principal','2','lavabo','studio','dml','recepcao','hall','externa']);
+function toks(str){
+  const s=(str||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ');
+  const out=new Set();
+  for(let w of s.split(' ')){ if(!w) continue; if(STOP.has(w)||FILLER.has(w)) continue;
+    if(VERBS[w]) w=VERBS[w]; else if(w.length>3&&w.endsWith('s')){ const sg=w.slice(0,-1); w=VERBS[sg]||sg; }
+    if(w.length>=2 || /^[0-9]+$/.test(w)) out.add(w); }
+  return out;
+}
+function parts(set){ const n=new Set(),v=new Set(),a=new Set(); set.forEach(x=>{ if(AREATOK.has(x))a.add(x); else if(VSET.has(x))v.add(x); else n.add(x); }); return {n,v,a}; }
+TASKS.forEach((t,i)=>{ t.id=i; t.owner=norm(t.owner); t.tt=new Set([...toks(t.title),...toks(t.area)]); t.pt=parts(t.tt); });
+function interSize(a,b){ let n=0; a.forEach(x=>{ if(b.has(x)) n++; }); return n; }
+function matchTasks(depToks, selfId){
+  const d=parts(depToks); const res=[];
+  TASKS.forEach(t=>{ if(t.id===selfId) return; const p=t.pt;
+    if(d.a.size && p.a.size && interSize(d.a,p.a)===0) return;                          // ambientes diferentes
+    if((d.v.has('conf')&&p.v.has('inst'))||(d.v.has('inst')&&p.v.has('conf'))) return;  // confecção ≠ instalação
+    if((d.v.has('compra')&&p.v.has('inst'))||(d.v.has('inst')&&p.v.has('compra'))) return; // compra ≠ instalação
+    const sn=interSize(d.n,p.n); if(sn<1) return;                                       // precisa de substantivo em comum
+    if(sn>=2 || interSize(d.v,p.v)>=1) res.push(t.id);                                  // 2 substantivos, ou 1 + mesmo verbo
+  });
+  return res;
+}
+// classify each dep -> matched task ids / person gate / soft note
+TASKS.forEach(t=>{
+  t.targets=new Set(); t.pgates=[]; t.notes=[];
+  t.deps.forEach(d=>{
+    const dt=toks(d.c||d.note||'');
+    const m=matchTasks(dt,t.id);
+    if(m.length){ m.forEach(x=>t.targets.add(x)); }
+    else if(d.p){ t.pgates.push(d); }
+    else { t.notes.push(d.c); }
+  });
+});
+// unlocks: how many tasks directly depend on this one
+const unlocks=new Array(TASKS.length).fill(0);
+TASKS.forEach(t=> t.targets.forEach(i=> unlocks[i]++ ));
+const dependents=TASKS.map(()=>[]);
+TASKS.forEach(t=> t.targets.forEach(i=> dependents[i].push(t.id)));
+
+/* ---------- estados derivados ---------- */
+const labelOwner=t=>isReal(t.owner)?t.owner:'a definir';
+function blockersOpen(t){ return [...t.targets]; }
+function isReady(t){ return t.targets.size===0 && t.pgates.length===0; }
+function isNext(t){ if(isReady(t)) return false; const bo=blockersOpen(t); return bo.length>0 && bo.every(i=>isReady(TASKS[i])); }
+
+/* ---------- state + UI ---------- */
+let view='agora', filterPerson=null, search='';
+const collapsedG=new Set();
+
+function personList(){
+  const m={};
+  TASKS.forEach(t=>{ if(isReal(t.owner)){ (m[t.owner]=m[t.owner]||{name:t.owner,total:0,ready:0}); m[t.owner].total++; if(isReady(t))m[t.owner].ready++; } });
+  return Object.values(m).sort((a,b)=> b.ready-a.ready || b.total-a.total || a.name.localeCompare(b.name));
+}
+function matchSearch(t){ if(!search) return true; const h=(t.title+" "+t.area+" "+t.owner+" "+t.deps.map(d=>(d.c||"")+(d.note||"")).join(" ")).toLowerCase(); return h.includes(search); }
+function passFilter(t){ return (!filterPerson || t.owner===filterPerson) && matchSearch(t); }
+
+function avatar(n,cls){ return `<span class="av ${cls||''}" style="background:${pcolor(n)}">${initials(n)}</span>`; }
+
+function statusChip(t){
+  if(isReady(t)) return `<span class="st liberada">Liberada</span>`;
+  return `<span class="st travada">Bloqueada · ${blockersOpen(t).length + t.pgates.length}</span>`;
+}
+function detHtml(t){
+  const items=[];
+  blockersOpen(t).forEach(i=>{ const b=TASKS[i]; items.push(`<div class="item wait"><span class="d"></span><b>${b.title}</b> <span class="o">${labelOwner(b)}</span></div>`); });
+  t.pgates.forEach(d=> items.push(`<div class="item person"><span class="d"></span>aguarda <b>${norm(d.p)}</b>: ${d.note||''}</div>`));
+  t.notes.forEach(c=> items.push(`<div class="item note"><span class="d"></span>${c}</div>`));
+  const blocked = blockersOpen(t).length || t.pgates.length;
+  const dep=dependents[t.id];
+  const parts=[];
+  if(items.length) parts.push(`<div class="blk"><div class="dl">${blocked?'Bloqueado por':'Observações'}</div>${items.join('')}</div>`);
+  if(dep.length) parts.push(`<div class="blk unlocks"><div class="dl">Ao concluir, destrava ${dep.length} tarefa${dep.length>1?'s':''}</div>${dep.map(i=>`<div class="item free"><span class="d"></span>${TASKS[i].title} <span class="o">${labelOwner(TASKS[i])}</span></div>`).join('')}</div>`);
+  else if(t.impact) parts.push(`<div class="impact"><b>Destrava</b>${t.impact}</div>`);
+  if(!parts.length) return '';
+  return `<div class="det">${parts.join('')}</div>`;
+}
+function row(t,opts){
+  opts=opts||{};
+  const meta=[];
+  if(opts.area!==false) meta.push(`<span>${t.area}</span>`);
+  if(opts.owner!==false) meta.push(`<span class="own">${avatar(t.owner)} ${labelOwner(t)}${t.role?` · ${t.role}`:''}</span>`);
+  if(unlocks[t.id]>0) meta.push(`<span class="unlk">destrava ${unlocks[t.id]}</span>`);
+  return `<div class="r ${isReady(t)?'ready':'blocked'}" data-id="${t.id}">
+    <div class="main">
+      <div class="ti"><h4>${t.title}</h4><div class="sub2">${meta.join('<span class="sep">·</span>')}</div></div>
+      ${statusChip(t)}
+    </div>${detHtml(t)}</div>`;
+}
+
+function renderTally(){
+  const total=TASKS.length, lib=TASKS.filter(isReady).length;
+  document.getElementById('tally').innerHTML=`
+    <div class="t g"><b>${lib}</b><span>liberadas pra executar</span></div>
+    <div class="t r"><b>${total-lib}</b><span>bloqueadas</span></div>
+    <div class="t"><b>${total}</b><span>tarefas no total</span></div>`;
+}
+function renderPeople(){
+  const ppl=personList();
+  document.getElementById('pstrip').innerHTML = ppl.map(p=>`
+    <button class="pchip ${filterPerson===p.name?'active':''}" data-person="${p.name}">
+      ${avatar(p.name)}
+      <span class="txt"><span class="who">${p.name}</span><span class="mt"><b>${p.ready}</b> pra executar · ${p.total} no total</span></span>
+    </button>`).join('');
+  const fp=document.getElementById('filterpill');
+  if(filterPerson){ fp.classList.add('on'); fp.innerHTML=`${filterPerson} <button data-role="clearfilter" aria-label="Limpar filtro">✕</button>`; }
+  else fp.classList.remove('on');
+}
+
+function renderAgora(){
+  const pool=TASKS.filter(passFilter);
+  const ready=pool.filter(isReady);
+  const next=pool.filter(isNext);
+  const rest=filterPerson ? pool.filter(t=>!isReady(t)&&!isNext(t)) : [];
+  const el=document.getElementById('view');
+  if(!ready.length && !next.length && !rest.length){ el.innerHTML=`<div class="empty">Nada liberado com esse filtro. Veja a aba Bloqueios pra entender o que precisa ser desbloqueado.</div>`; return; }
+  const groups={};
+  ready.forEach(t=>{ const k=isReal(t.owner)?t.owner:'A definir'; (groups[k]=groups[k]||[]).push(t); });
+  const order=Object.keys(groups).sort((a,b)=> groups[b].length-groups[a].length || a.localeCompare(b));
+  let html=`<div class="banner"><b>${ready.length}</b> tarefa${ready.length!==1?'s':''} pra executar agora${filterPerson?` (${filterPerson})`:''} — dá pra tocar já, sem esperar ninguém.</div>`;
+  order.forEach(name=>{
+    const list=groups[name].sort((a,b)=> unlocks[b.id]-unlocks[a.id]);
+    html+=`<div class="group"><div class="ghead">${avatar(name,'')}<h3>${name==='A definir'?'Sem responsável definido':name}</h3>
+      <span class="gc">${list.length} pra executar</span></div>
+      <div class="rows">${list.map(t=>row(t,{owner:false})).join('')}</div></div>`;
+  });
+  if(next.length){
+    html+=`<div class="divider"><h2>Próximas a liberar</h2><span class="ln"></span><span class="h">assim que as de cima saírem</span></div>`;
+    html+=`<div class="rows">${next.sort((a,b)=>unlocks[b.id]-unlocks[a.id]).map(t=>row(t,{})).join('')}</div>`;
+  }
+  if(rest.length){
+    html+=`<div class="divider"><h2>Mais adiante</h2><span class="ln"></span><span class="h">dependem de outras coisas antes</span></div>`;
+    html+=`<div class="rows">${rest.sort((a,b)=>unlocks[b.id]-unlocks[a.id]).map(t=>row(t,{})).join('')}</div>`;
+  }
+  el.innerHTML=html;
+}
+function renderBloqueios(){
+  const el=document.getElementById('view');
+  const blocks={};
+  TASKS.forEach(t=>{ blockersOpen(t).forEach(i=>{ (blocks[i]=blocks[i]||[]).push(t); }); });
+  let arr=Object.keys(blocks).map(i=>({t:TASKS[+i], deps:blocks[+i]})).filter(x=>passFilter(x.t));
+  arr.sort((a,b)=> b.deps.length-a.deps.length || (isReady(b.t)-isReady(a.t)));
+  if(!arr.length){ el.innerHTML=`<div class="empty">Nenhum bloqueio ${filterPerson?'de '+filterPerson:''} — nada aqui está segurando outras tarefas.</div>`; return; }
+  let html=`<div class="banner">Estas tarefas estão <b style="color:var(--red)">bloqueando o resto da obra</b>, das que mais seguram pras que menos seguram. As <b style="color:var(--green)">verdes</b> já dá pra fazer; as vermelhas precisam ser desbloqueadas antes.</div>`;
+  arr.forEach(({t,deps})=>{
+    const canDo=isReady(t);
+    html+=`<div class="blocker ${canDo?'go':'wait'}" data-id="${t.id}">
+      <div class="bhead">
+        ${avatar(t.owner)}
+        <div class="bt"><h4>${t.title}</h4><div class="bmeta"><span>${t.area}</span><span class="sep">·</span><span class="own">${labelOwner(t)}</span><span class="sep">·</span>${canDo?'<span class="st liberada">pode fazer já</span>':'<span class="st travada">desbloquear antes</span>'}</div></div>
+        <span class="btcount">bloqueia<b>${deps.length}</b></span>
+      </div>
+      <div class="blocklist">${deps.map(d=>`<div class="bl"><span class="d"></span>${d.title} <span class="o">(${labelOwner(d)})</span></div>`).join('')}</div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+function renderAmbiente(){
+  const el=document.getElementById('view'); let html='';
+  AREAS.forEach((area,ai)=>{
+    const items=TASKS.filter(t=>t.area===area&&passFilter(t)); if(!items.length) return;
+    items.sort((a,b)=> (isReady(b)-isReady(a)) || unlocks[b.id]-unlocks[a.id]);
+    const ready=items.filter(isReady).length;
+    const col=collapsedG.has(area);
+    html+=`<div class="group ${col?'collapsed':''}"><div class="ghead" data-area="${area}">
+      <span class="idx">${String(ai+1).padStart(2,'0')}</span><h3>${area}</h3>
+      <span class="gc">${ready} liberada${ready!==1?'s':''} · ${items.length} no total
+      <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></span></div>
+      <div class="rows">${items.map(t=>row(t,{area:false})).join('')}</div></div>`;
+  });
+  el.innerHTML=html||`<div class="empty">Nenhuma tarefa com esse filtro.</div>`;
+}
+function renderResponsavel(){
+  const el=document.getElementById('view');
+  const ppl=personList(); const names=ppl.map(p=>p.name);
+  const undef=TASKS.filter(t=>!isReal(t.owner));
+  let html='<div class="cols">';
+  names.forEach(name=>{
+    const items=TASKS.filter(t=>t.owner===name&&matchSearch(t)); if(!items.length) return;
+    if(filterPerson && filterPerson!==name) return;
+    items.sort((a,b)=> (isReady(b)-isReady(a)) || unlocks[b.id]-unlocks[a.id]);
+    const ready=items.filter(isReady).length;
+    html+=`<div class="group" style="margin:0"><div class="ghead">${avatar(name,'')}<h3>${name}</h3>
+      <span class="gc">${ready}/${items.length} liberadas</span></div>
+      <div class="rows">${items.map(t=>row(t,{owner:false})).join('')}</div></div>`;
+  });
+  if(!filterPerson && undef.length){
+    const items=undef.filter(matchSearch);
+    if(items.length) html+=`<div class="group" style="margin:0"><div class="ghead">${avatar('A definir','')}<h3>Sem responsável</h3><span class="gc">${items.length} tarefas</span></div>
+      <div class="rows">${items.map(t=>row(t,{owner:false})).join('')}</div></div>`;
+  }
+  html+='</div>';
+  el.innerHTML=html;
+}
+function render(){
+  renderTally(); renderPeople();
+  if(view==='agora') renderAgora();
+  else if(view==='bloqueios') renderBloqueios();
+  else if(view==='ambiente') renderAmbiente();
+  else renderResponsavel();
+}
+
+/* ---------- events ---------- */
+document.getElementById('tabs').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
+  view=b.dataset.view; [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-selected',x===b)); render(); });
+document.getElementById('search').addEventListener('input',e=>{ search=e.target.value.toLowerCase().trim(); render(); });
+document.getElementById('pstrip').addEventListener('click',e=>{ const b=e.target.closest('.pchip'); if(!b) return;
+  const n=b.dataset.person; filterPerson=filterPerson===n?null:n; render(); });
+document.getElementById('filterpill').addEventListener('click',e=>{ if(e.target.dataset.role==='clearfilter'){ filterPerson=null; render(); } });
+document.getElementById('view').addEventListener('click',e=>{
+  const ah=e.target.closest('.ghead[data-area]');
+  if(ah){ const a=ah.dataset.area; collapsedG.has(a)?collapsedG.delete(a):collapsedG.add(a); render(); }
+});
+render();
+</script>
