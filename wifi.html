@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conectar ao Wi-Fi</title>
+
+    <style>
+        body{
+            font-family:Arial,Helvetica,sans-serif;
+            max-width:500px;
+            margin:40px auto;
+            padding:20px;
+            text-align:center;
+        }
+
+        .card{
+            border:1px solid #ddd;
+            border-radius:12px;
+            padding:25px;
+        }
+
+        button{
+            padding:15px 25px;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+        }
+
+        code{
+            background:#eee;
+            padding:2px 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+
+<h2>Wi-Fi da Clínica</h2>
+
+<p>Rede:</p>
+<h3>Kleyton</h3>
+
+<p>Senha:</p>
+<h3>caires2006</h3>
+
+<button onclick="copiarSenha()">
+Copiar senha
+</button>
+
+<div id="android" style="display:none;margin-top:25px">
+<p>No Android, abra as configurações do Wi-Fi e selecione a rede.</p>
+</div>
+
+<div id="ios" style="display:none;margin-top:25px">
+<p>No iPhone, toque em <strong>Configurações → Wi-Fi</strong> e escolha:</p>
+
+<h3>Kleyton</h3>
+
+<p>Depois cole a senha.</p>
+</div>
+
+</div>
+
+<script>
+
+const ua = navigator.userAgent;
+
+if(/Android/i.test(ua)){
+    document.getElementById("android").style.display="block";
+}
+
+if(/iPhone|iPad|iPod/i.test(ua)){
+    document.getElementById("ios").style.display="block";
+}
+
+function copiarSenha(){
+    navigator.clipboard.writeText("caires2006");
+    alert("Senha copiada!");
+}
+
+</script>
+
+</body>
+</html>
