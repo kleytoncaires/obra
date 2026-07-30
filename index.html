@@ -184,7 +184,6 @@
 const TASKS = [
   // GERAL
   {area:"Geral", title:"Finalizar marcenaria", owner:"Marcenaria", role:"Fornecedor", deps:[], impact:"Destrava micro-ondas, frigobares e impressora."},
-  {area:"Geral", title:"Comprar itens do pedal da torneira", owner:"Kleyton", role:"Responsável", deps:[], impact:"Necessária para instalar os pedais das salas."},
   // LAVABO
   {area:"Lavabo", title:"Instalar Ventokit", owner:"Nelson", role:"Executor", deps:[]},
   {area:"Lavabo", title:"Mover caixa de som", owner:"Nelson", role:"Executor", deps:[]},
@@ -193,11 +192,11 @@ const TASKS = [
   {area:"Lavabo", title:"Confecção da nova pia", owner:"Daniel", role:"Responsável", deps:[], impact:"Necessária para a instalação da nova pia."},
   {area:"Lavabo", title:"Instalar nova pia", owner:"Rubens", role:"Executor", deps:[{c:"Confecção da nova pia"}]},
   // SALA PRINCIPAL
-  {area:"Sala Principal", title:"Instalar TV", owner:"Kleyton", role:"Responsável", deps:[]},
+  {area:"Sala Principal", title:"Instalar TV", owner:"Rubens", role:"Executor", deps:[]},
   {area:"Sala Principal", title:"Instalar cadeira", owner:"Alessandro", role:"Executor", deps:[{p:"Rubens", note:"cuba e torneira — Sala Principal"},{c:"Pintura de parede — Sala Principal"},{c:"Pintura de teto — Sala Principal"}]},
   {area:"Sala Principal", title:"Confecção da mesa", owner:"Daniel", role:"Responsável", deps:[]},
   {area:"Sala Principal", title:"Instalar cuba e torneira", owner:"Rubens", role:"Executor", deps:[]},
-  {area:"Sala Principal", title:"Instalar pedal da torneira", owner:"Rubens", role:"Executor", deps:[{c:"Compra dos itens do pedal da torneira"},{p:"Rubens", note:"finalizar cuba e torneira — Sala Principal"}]},
+  {area:"Sala Principal", title:"Instalar pedal da torneira", owner:"Rubens", role:"Executor", deps:[{p:"Rubens", note:"finalizar cuba e torneira — Sala Principal"}]},
   {area:"Sala Principal", title:"Comprar frigobar", owner:"Kleyton", role:"Responsável", deps:[{c:"Finalização da marcenaria"}]},
   {area:"Sala 2", title:"Comprar frigobar", owner:"Kleyton", role:"Responsável", deps:[{c:"Finalização da marcenaria"}]},
   {area:"Sala Principal", title:"Aplicar nova iluminação", owner:"Nelson", role:"Executor", deps:[]},
@@ -210,18 +209,16 @@ const TASKS = [
   {area:"Studio / DML", title:"Medir posição dos itens do Studio", owner:"Luana", role:"Responsável", deps:[], impact:"Necessário para definir os equipamentos e as TVs do Studio."},
   {area:"Studio / DML", title:"Comprar micro-ondas", owner:"A definir", role:"", deps:[{c:"Finalização da marcenaria"}]},
   // SALA 2
-  {area:"Sala 2", title:"Instalar TV", owner:"Kleyton", role:"Responsável", deps:[]},
+  {area:"Sala 2", title:"Instalar TV", owner:"Rubens", role:"Executor", deps:[]},
   {area:"Sala 2", title:"Instalar cadeira", owner:"Alessandro", role:"Executor", deps:[{c:"Instalação da TV — Sala 2"},{p:"Rubens", note:"cuba e torneira — Sala 2"},{c:"Pintura de parede — Sala 2"},{c:"Pintura de teto — Sala 2"}]},
   {area:"Sala 2", title:"Confecção da mesa", owner:"Daniel", role:"Responsável", deps:[]},
   {area:"Sala 2", title:"Instalar cuba e torneira", owner:"Rubens", role:"Executor", deps:[]},
-  {area:"Sala 2", title:"Instalar pedal da torneira", owner:"Rubens", role:"Executor", deps:[{c:"Compra dos itens do pedal da torneira"},{p:"Rubens", note:"instalação da cuba e torneira — Sala 2"}]},
+  {area:"Sala 2", title:"Instalar pedal da torneira", owner:"Rubens", role:"Executor", deps:[{p:"Rubens", note:"instalação da cuba e torneira — Sala 2"}]},
   {area:"Sala 2", title:"Aplicar nova iluminação", owner:"Nelson", role:"Executor", deps:[]},
   {area:"Sala 2", title:"Instalar pendente", owner:"Nelson", role:"Executor", deps:[]},
   // ÁREA EXTERNA
-  {area:"Área Externa", title:"Aprovar compra do purgador", owner:"Alessandro", role:"Aprovação", deps:[], impact:"Libera a compra do purgador pela Luana."},
-  {area:"Área Externa", title:"Purgador do compressor", owner:"Luana", role:"Responsável", deps:[{c:"Aprovação do Alessandro (purgador)"},{c:"Instalação das cadeiras odontológicas (salas)"}]},
-  {area:"Área Externa", title:"Instalar compressor", owner:"Alessandro", role:"Executor", deps:[{c:"Instalação das cadeiras odontológicas (salas)"}]},
-  {area:"Área Externa", title:"Instalar telhado", owner:"A definir", role:"", deps:[{c:"Instalação do compressor"}]},
+  {area:"Área Externa", title:"Purgador do compressor", owner:"Luana", role:"Responsável", deps:[{c:"Instalação das cadeiras odontológicas (salas)"}]},
+  {area:"Área Externa", title:"Instalar telhado", owner:"Rubens", role:"Executor", deps:[]},
   // RECEPÇÃO
   {area:"Recepção", title:"Definir empresa da logomarca", owner:"Kleyton", role:"Responsável", deps:[], impact:"Necessária para executar a logomarca na parede."},
   {area:"Recepção", title:"Logomarca na parede", owner:"Luana", role:"Responsável", deps:[{c:"Definição da empresa da logomarca"},{c:"Instalação ao final da obra"}]},
@@ -243,7 +240,7 @@ const TASKS = [
   {area:"Lavabo", title:"Pintura de teto — Lavabo", owner:"Rubens", role:"Executor", deps:[{c:"Instalar Ventokit"},{c:"Mover caixa de som"},{c:"Aplicar nova iluminação do teto — Lavabo"}]},
   {area:"Sala Principal", title:"Pintura de parede — Sala Principal", owner:"Rubens", role:"Executor", deps:[{c:"Instalação da cuba e torneira — Sala Principal"}]},
   {area:"Sala Principal", title:"Pintura de teto — Sala Principal", owner:"Rubens", role:"Executor", deps:[{c:"Aplicar nova iluminação — Sala Principal"},{c:"Remover câmera — Sala Principal"}]},
-  {area:"Studio / DML", title:"Instalar trilhos do Studio", owner:"A definir", role:"", deps:[]},
+  {area:"Studio / DML", title:"Instalar trilhos do Studio", owner:"Walisson", role:"Executor", deps:[]},
   {area:"Studio / DML", title:"Pintura de parede — Studio", owner:"Rubens", role:"Executor", deps:[{c:"Instalação do filtro"},{c:"Instalação dos trilhos do Studio"}]},
   {area:"Studio / DML", title:"Pintura de teto — Studio", owner:"Rubens", role:"Executor", deps:[{c:"Instalação do filtro"},{c:"Instalação dos trilhos do Studio"}]},
   {area:"Sala 2", title:"Pintura de parede — Sala 2", owner:"Rubens", role:"Executor", deps:[{c:"Instalação da cuba e torneira — Sala 2"}]},
@@ -253,7 +250,7 @@ const TASKS = [
   {area:"Recepção", title:"Pintura de teto — Recepção", owner:"Rubens", role:"Executor", deps:[]},
 ];
 const AREAS = ["Geral","Lavabo","Sala Principal","Studio / DML","Sala 2","Área Externa","Recepção"];
-const PCOLORS = {"Anna":"#c2410c","Luana":"#7c3aed","Daniel":"#0e7490","Kleyton":"#1d4ed8","Nelson":"#15803d","Rubens":"#a16207","Alessandro":"#be185d","Marcenaria":"#4b5563","A definir":"#94a3b8"};
+const PCOLORS = {"Anna":"#c2410c","Luana":"#7c3aed","Daniel":"#0e7490","Kleyton":"#1d4ed8","Nelson":"#15803d","Rubens":"#a16207","Alessandro":"#be185d","Walisson":"#0f766e","Marcenaria":"#4b5563","A definir":"#94a3b8"};
 const norm = n => n==="Arquiteta" ? "Anna" : n;
 const pcolor = n => PCOLORS[n] || "#64748b";
 const isReal = n => n && n!=="A definir";
